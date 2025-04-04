@@ -1,0 +1,130 @@
+#include <stdio.h>
+
+const int linhas = 10;
+const int colunas = 10;
+const int navio = 3;
+const int hab_tam = 5; // Tamanho da matriz de habilidade
+
+int main() {
+    // Declaração do tabuleiro
+    int tabuleiro[linhas][colunas];
+    
+    // Inicialização da água = 0
+    for(int i = 0; i < linhas; i++) {
+        for(int j = 0; j < colunas; j++) {
+            tabuleiro[i][j] = 0;
+        }
+    }
+
+    // Posicionamento dos navios
+    for(int i = 0; i < navio; i++) {
+        tabuleiro[2][3 + i] = 3; // Vertical
+        tabuleiro[5 + i][7] = 3;  // Horizontal
+        tabuleiro[0 + i][0 + i] = 3; // Diagonal 1
+        tabuleiro[1 + i][8 - i] = 3; // Diagonal 2
+    }
+
+    // Exibir tabuleiro antes das habilidades
+    printf("Tabuleiro ANTES das habilidades:\n");
+    for(int i = 0; i < linhas; i++) {
+        for(int j = 0; j < colunas; j++) {
+            printf("%d ", tabuleiro[i][j]);
+        }
+        printf("\n");
+    }
+
+    // Matrizes para as habilidades
+
+    int cone[hab_tam][hab_tam];
+    int cruz[hab_tam][hab_tam];
+    int octaedro[hab_tam][hab_tam];
+    int centro = hab_tam/2;
+
+    // Criar habilidade Cone 
+
+    for(int i = 0; i < hab_tam; i++) {
+        for(int j = 0; j < hab_tam; j++) {
+            if(j >= (centro - i/2) && j <= (centro + i/2) && i <= centro) {
+                cone[i][j] = 1;
+            } else {
+                cone[i][j] = 0;
+            }
+        }
+    }
+
+    // Criar habilidade Cruz (linha e coluna central)
+    for(int i = 0; i < hab_tam; i++) {
+        for(int j = 0; j < hab_tam; j++) {
+            if(i == centro || j == centro) {
+                cruz[i][j] = 1;
+            } else {
+                cruz[i][j] = 0;
+            }
+        }
+    }
+
+    // Criar habilidade Octaedro 
+
+    for(int i = 0; i < hab_tam; i++) {
+        for(int j = 0; j < hab_tam; j++) {
+
+            // Calcula distância do centro 
+            int dist_i = (i > centro) ? (i - centro) : (centro - i);
+            int dist_j = (j > centro) ? (j - centro) : (centro - j);
+            
+            if(dist_i + dist_j <= centro) {
+                octaedro[i][j] = 1;
+            } else {
+                octaedro[i][j] = 0;
+            }
+        }
+    }
+
+    // Aplicar habilidades ao tabuleiro
+
+    // Aplicar Cone na posição (3,2)
+
+    for(int i = 0; i < hab_tam; i++) {
+        for(int j = 0; j < hab_tam; j++) {
+            int x = 3 - centro + i;
+            int y = 2 - centro + j;
+            if(x >= 0 && x < linhas && y >= 0 && y < colunas && cone[i][j] == 1 && tabuleiro[x][y] != 3) {
+                tabuleiro[x][y] = 5;
+            }
+        }
+    }
+
+    // Aplicar Cruz na posição (5,5)
+    for(int i = 0; i < hab_tam; i++) {
+        for(int j = 0; j < hab_tam; j++) {
+            int x = 5 - centro + i;
+            int y = 5 - centro + j;
+            if(x >= 0 && x < linhas && y >= 0 && y < colunas && cruz[i][j] == 1 && tabuleiro[x][y] != 3) {
+                tabuleiro[x][y] = 5;
+            }
+        }
+    }
+
+    // Aplicar Octaedro na posição (7,7)
+    for(int i = 0; i < hab_tam; i++) {
+        for(int j = 0; j < hab_tam; j++) {
+            int x = 7 - centro + i;
+            int y = 7 - centro + j;
+            if(x >= 0 && x < linhas && y >= 0 && y < colunas && octaedro[i][j] == 1 && tabuleiro[x][y] != 3) {
+                tabuleiro[x][y] = 5;
+            }
+        }
+    }
+
+    // Exibir tabuleiro após as habilidades
+    
+    printf("\nTabuleiro APOS as habilidades:\n");
+    for(int i = 0; i < linhas; i++) {
+        for(int j = 0; j < colunas; j++) {
+            printf("%d ", tabuleiro[i][j]);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
